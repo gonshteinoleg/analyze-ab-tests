@@ -30,32 +30,22 @@ WHERE transactions > 3
 ),
 test_groups AS
 (
-  SELECT date, visitId, fullVisitorId, 0 as test_group
+  SELECT date, visitId, fullVisitorId, 
+  CASE
+    WHEN user_separator IN ('part5', 'part6', 'part7', 'part8')
+    THEN 0
+    WHEN user_separator IN ('part9', 'part10', 'part11', 'part12')
+    THEN 1
+    WHEN user_separator IN ('part1', 'part2', 'part3', 'part4')
+    THEN 2
+  END as test_group
   FROM `project-name.CommonData.hits` 
-  WHERE date BETWEEN '2022-01-13' AND '2022-01-19' AND user_separator IN ('part5', 'part6', 'part7', 'part8')
+  WHERE date BETWEEN '2022-01-13' AND '2022-01-19' 
   AND pagePath LIKE "%/shop/number%"
   AND fullVisitorId NOT IN (
       SELECT fullVisitorId
       FROM more_three_transactions
-      )
-  UNION ALL
-  SELECT date, visitId, fullVisitorId, 1 as test_group
-  FROM `project-name.CommonData.hits` 
-  WHERE date BETWEEN '2022-01-13' AND '2022-01-19' AND user_separator IN ('part9', 'part10', 'part11', 'part12')
-  AND pagePath LIKE "%/shop/number%"
-  AND fullVisitorId NOT IN (
-      SELECT fullVisitorId
-      FROM more_three_transactions
-      )
-  UNION ALL
-  SELECT date, visitId, fullVisitorId, 2 as test_group
-  FROM `project-name.CommonData.hits` 
-  WHERE date BETWEEN '2022-01-13' AND '2022-01-19' AND user_separator IN ('part1', 'part2', 'part3', 'part4')
-  AND pagePath LIKE "%/shop/number%"
-  AND fullVisitorId NOT IN (
-      SELECT fullVisitorId
-      FROM more_three_transactions
-      )
+  )
 ),
 transactions_table AS 
 (
@@ -68,8 +58,7 @@ transactions_table AS
       )
   GROUP BY 1, 2, 3
 )
-
-SELECT a.date, a.test_group, users, purchase
+SELECT a.date, a.test_group, users, transactions
 FROM
 (
   SELECT date, test_group, COUNT(DISTINCT fullVisitorId) as users
@@ -86,7 +75,7 @@ JOIN
     ) as a
   JOIN
     (
-    SELECT date, visitId, fullVisitorId
+    SELECT date, visitId, fullVisitorId, transactions
     FROM transactions_table
     ) as b on a.visitId=b.visitId AND a.fullVisitorId=b.fullVisitorId
   GROUP BY 1, 2
