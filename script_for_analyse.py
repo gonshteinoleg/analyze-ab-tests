@@ -104,12 +104,8 @@ b = (purchase.query('test_group == 2')['transactions'].sum() /
      purchase.query('test_group == 2')['users'].sum() * 100)
 uplift = (b - a) / a * 100
 
-print("Конверсия в контрольной группе:",
-      purchase.query('test_group == 0')['transactions'].sum() /
-      purchase.query('test_group == 0')['users'].sum() * 100)
-print("Конверсия в тестовой группе:",
-      purchase.query('test_group == 2')['transactions'].sum() /
-      purchase.query('test_group == 2')['users'].sum() * 100)
+print("Конверсия в добавление в корзину в контрольной группе:", a)
+print("Конверсия в добавление в корзину в тестовой группе:", b)
 print("uplift:", uplift)
 
 px.line(purchase, x="date", y="conversion", color='test_group')
