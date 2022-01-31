@@ -21,7 +21,7 @@ more_three_transactions AS
 SELECT fullVisitorId, transactions
 FROM
   (
-  SELECT fullVisitorId, COUNT(DISTINCT transactionId) as transactions
+  SELECT fullVisitorId, COUNT(DISTINCT CONCAT(hits_time, fullVisitorId)) as transactions
   FROM `project-name.CommonData.transactions`
   WHERE date BETWEEN '2021-12-13' AND '2022-01-19' AND transactionType NOT IN ('business', 'offer')
   GROUP BY 1
